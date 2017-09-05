@@ -72,7 +72,7 @@ bool ListLink<T>::find(T d,NodeSimple<T> **& p)
 {
   p=&head;
   while(*p){
-    if((*p)->value==d)  return true;
+
     //if((*p)->value>d) return false;   comentamos para indexacion
     p=&(*p)->left;
   }
@@ -97,41 +97,45 @@ template<typename T>
 void ListLink<T>:: indexar(char * filename)
 {
   ifstream file(filename);
-  char key[100];
   long int address = 0;
   char information[5000];
+  char key[100];
+
+
   while(!file.eof()){
     file.getline(key,100,'#');
     file.getline(information,5000,'@');
     Record R(key,address);
     add(R);
     address=address + strlen(key)+strlen(information)+3;
+
   }
+  file.close();
 }
 
 template<typename T>
 void ListLink<T>::read(char * key,char * filename)
 {
   NodeSimple<T> **p;
-  if(find(Record(key),p)){
+  if(find(Record(key,0),p)){
     char info[10000];
-    long int address=(*p)->value.address;
+    long int address=(*p)->value.get_address();
     ifstream file(filename);
     file.seekg(ios::beg);
     file.seekg(address);
     file.getline(info,10000,'@');
+    file.close();
   }
 }
 template<typename T>
 ListLink<T>::~ListLink()
 {
-  cout<<"--------Trabajo terminado-----------"<<endl;
   NodeSimple<T> *n;
   do{
+    if(!head) return;
     n=head;
     head=head->left;  ////////  apuntas ,saltas ,borras
     delete n;
-    cout<<">eliminando nodo........."<<endl;
   }while(head);
   head=tail=NULL;
 }
